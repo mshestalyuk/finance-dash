@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState } from "react";
 import { useFinance } from "../hooks/useFinance";
 import { formatCurrency } from "../utils/formatCurrency";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/Card";
@@ -8,7 +8,7 @@ import { Button } from "./ui/Button";
 import { Badge } from "./ui/Badge";
 import { Input } from "./ui/Input";
 import { Select } from "./ui/Select";
-import { Trash2, Edit2, X, Check, ArrowDown, ArrowUp } from "lucide-react";
+import { Trash2, Edit2, X, Check } from "lucide-react";
 import { Transaction } from "../types";
 
 export function TransactionsTable() {
@@ -24,45 +24,16 @@ export function TransactionsTable() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editForm, setEditForm] = useState<Partial<Transaction>>({});
   
-  // Sort state
-  const [sortDirection, setSortDirection] = useState<'desc' | 'asc'>('desc');
-  
-  // Pagination state
-  const [currentPage, setCurrentPage] = useState(1);
-  const ITEMS_PER_PAGE = 15;
-
-  // Apply filters and sorting
-  const filteredTransactions = useMemo(() => {
-    const filtered = transactions.filter(t => {
-      if (filterType !== 'all' && t.type !== filterType) return false;
-      if (filterCategory !== 'all' && t.categoryId !== filterCategory) return false;
-      if (filterStartDate && new Date(t.date) < new Date(filterStartDate)) return false;
-      if (filterEndDate && new Date(t.date) > new Date(filterEndDate)) return false;
-      return true;
-    });
-
-    if (sortDirection === 'asc') {
-      return [...filtered].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-    }
-    return [...filtered].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-  }, [transactions, filterType, filterCategory, filterStartDate, filterEndDate, sortDirection]);
-
-  // Reset page to 1 when filters or sort change
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [filterType, filterCategory, filterStartDate, filterEndDate, sortDirection]);
-
   if (!isHydrated) return <Card className="animate-pulse h-[400px]"><CardContent /></Card>;
 
-  const totalPages = Math.ceil(filteredTransactions.length / ITEMS_PER_PAGE);
-  const paginatedTransactions = filteredTransactions.slice(
-    (currentPage - 1) * ITEMS_PER_PAGE,
-    currentPage * ITEMS_PER_PAGE
-  );
-
-  const toggleSort = () => {
-    setSortDirection(prev => prev === 'desc' ? 'asc' : 'desc');
-  };
+  // Apply filters
+  const filteredTransactions = transactions.filter(t => {
+    if (filterType !== 'all' && t.type !== filterType) return false;
+    if (filterCategory !== 'all' && t.categoryId !== filterCategory) return false;
+    if (filterStartDate && new Date(t.date) < new Date(filterStartDate)) return false;
+    if (filterEndDate && new Date(t.date) > new Date(filterEndDate)) return false;
+    return true;
+  });
 
   const handleEditClick = (tx: Transaction) => {
     setEditingId(tx.id);
@@ -135,15 +106,7 @@ export function TransactionsTable() {
           <table className="w-full text-sm min-w-[600px]">
             <thead>
               <tr className="border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/50">
-                <th 
-                  className="h-10 px-4 text-left align-middle font-medium text-zinc-500 cursor-pointer hover:text-zinc-900 dark:hover:text-zinc-100 select-none group"
-                  onClick={toggleSort}
-                >
-                  <div className="flex items-center gap-1">
-                    Date
-                    {sortDirection === 'desc' ? <ArrowDown className="h-3 w-3" /> : <ArrowUp className="h-3 w-3" />}
-                  </div>
-                </th>
+                <th className="h-10 px-4 text-left align-middle font-medium text-zinc-500">Date</th>
                 <th className="h-10 px-4 text-left align-middle font-medium text-zinc-500">Note</th>
                 <th className="h-10 px-4 text-left align-middle font-medium text-zinc-500">Category</th>
                 <th className="h-10 px-4 text-right align-middle font-medium text-zinc-500">Amount</th>
@@ -151,12 +114,12 @@ export function TransactionsTable() {
               </tr>
             </thead>
             <tbody>
-              {paginatedTransactions.length === 0 ? (
+              {filteredTransactions.length === 0 ? (
                 <tr>
                   <td colSpan={5} className="p-4 text-center text-zinc-500 text-sm">No transactions found matching your filters.</td>
                 </tr>
               ) : (
-                paginatedTransactions.map((tx) => {
+                filteredTransactions.map((tx) => {
                   const category = categories.find(c => c.id === tx.categoryId);
                   const isIncome = tx.type === 'income';
                   
@@ -226,35 +189,6 @@ export function TransactionsTable() {
             </tbody>
           </table>
         </div>
-        
-        {totalPages > 1 && (
-          <div className="flex flex-col sm:flex-row items-center justify-between pt-4 mt-4 border-t border-zinc-200 dark:border-zinc-800 gap-4">
-            <div className="text-sm text-zinc-500">
-              Showing {(currentPage - 1) * ITEMS_PER_PAGE + 1} to {Math.min(currentPage * ITEMS_PER_PAGE, filteredTransactions.length)} of {filteredTransactions.length} transactions
-            </div>
-            <div className="flex items-center gap-4">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-                disabled={currentPage === 1}
-              >
-                Previous
-              </Button>
-              <div className="text-sm font-medium">
-                Page {currentPage} of {totalPages}
-              </div>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-                disabled={currentPage === totalPages}
-              >
-                Next
-              </Button>
-            </div>
-          </div>
-        )}
       </CardContent>
     </Card>
   );

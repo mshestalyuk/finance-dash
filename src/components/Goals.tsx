@@ -6,7 +6,6 @@ import { formatCurrency } from "../utils/formatCurrency";
 import { Card, CardContent } from "./ui/Card";
 import { Button } from "./ui/Button";
 import { GoalFormModal } from "./GoalFormModal";
-import { PageDescription } from "./PageDescription";
 import { Plus, Edit2, Trash2, Target, Calendar, TrendingUp } from "lucide-react";
 import { Goal } from "../types";
 
@@ -15,7 +14,13 @@ export function Goals() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingGoal, setEditingGoal] = useState<Goal | undefined>();
 
-
+  if (!isHydrated) {
+    return (
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        {[1, 2, 3].map(i => <Card key={i} className="animate-pulse h-48"><CardContent /></Card>)}
+      </div>
+    );
+  }
 
   const handleOpenAdd = () => {
     setEditingGoal(undefined);
@@ -44,17 +49,13 @@ export function Goals() {
 
   return (
     <div className="space-y-6">
-      <PageDescription>
-        <Button onClick={handleOpenAdd} className="flex items-center gap-2 w-full sm:w-auto">
+      <div className="flex justify-end">
+        <Button onClick={handleOpenAdd} className="flex items-center gap-2">
           <Plus className="w-4 h-4" /> Add New Goal
         </Button>
-      </PageDescription>
+      </div>
 
-      {!isHydrated ? (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {[1, 2, 3].map(i => <Card key={i} className="animate-pulse h-48"><CardContent /></Card>)}
-        </div>
-      ) : sortedGoals.length === 0 ? (
+      {sortedGoals.length === 0 ? (
         <div className="text-center py-12 text-zinc-500">
           <Target className="w-12 h-12 mx-auto mb-4 opacity-20" />
           <p>No financial goals set yet. Start planning out your future!</p>
