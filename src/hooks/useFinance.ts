@@ -1,12 +1,7 @@
 import { useMemo } from 'react';
 import { useLocalStorage } from './useLocalStorage';
-import { Transaction, Category, Budget, FilterOptions, Goal, Preferences } from '../types';
+import { Transaction, Category, Budget, FilterOptions, Goal } from '../types';
 import { defaultCategories, mockTransactions, defaultGoals } from '../utils/mockData';
-
-const defaultPreferences: Preferences = {
-  currency: 'PLN',
-  emailNotifications: false,
-};
 
 export function useFinance() {
   const [transactions, setTransactions, isHydrated] = useLocalStorage<Transaction[]>(
@@ -27,11 +22,6 @@ export function useFinance() {
   const [goals, setGoals] = useLocalStorage<Goal[]>(
     'dashboard_goals',
     defaultGoals || []
-  );
-
-  const [preferences, setPreferences] = useLocalStorage<Preferences>(
-    'dashboard_preferences',
-    defaultPreferences
   );
 
   // computations
@@ -108,10 +98,6 @@ export function useFinance() {
     setGoals(prev => prev.filter(item => item.id !== id));
   };
 
-  const updatePreferences = (newPrefs: Partial<Preferences>) => {
-    setPreferences(prev => ({ ...prev, ...newPrefs }));
-  };
-
   // filtering
 
   const getFilteredTransactions = (options: FilterOptions) => {
@@ -130,7 +116,6 @@ export function useFinance() {
     categories,
     budget,
     goals,
-    preferences,
     isHydrated,
 
     // calculated values for current month
@@ -147,7 +132,6 @@ export function useFinance() {
     getFilteredTransactions,
     addGoal,
     editGoal,
-    deleteGoal,
-    updatePreferences
+    deleteGoal
   };
 }
