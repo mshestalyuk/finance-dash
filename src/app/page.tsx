@@ -2,6 +2,7 @@ import { DashboardSummary } from "../components/DashboardSummary";
 import { RecentTransactions } from "../components/RecentTransactions";
 import { CategoryPieChart } from "../components/CategoryPieChart";
 import { PageDescription } from "../components/PageDescription";
+import { SavingsTrendChart } from "../components/SavingsTrendChart";
 
 export default function Home() {
   return (
@@ -9,10 +10,18 @@ export default function Home() {
       <PageDescription />
       
       <DashboardSummary />
+
+      <SavingsTrendChart />
       
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-        <CategoryPieChart />
-        <RecentTransactions />
+      <div className="grid gap-4 lg:grid-cols-10">
+        <CategoryPieChart className="lg:col-span-3" />
+        <CategoryPieChart
+          type="income"
+          title="Incomes by Category"
+          emptyMessage="No incomes found."
+          className="lg:col-span-3"
+        />
+        <RecentTransactions className="lg:col-span-4" />
       </div>
     </div>
   );

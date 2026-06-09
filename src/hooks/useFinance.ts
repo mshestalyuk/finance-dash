@@ -1,7 +1,12 @@
 import { useMemo } from 'react';
 import { useLocalStorage } from './useLocalStorage';
-import { Transaction, Category, Budget, FilterOptions, Goal } from '../types';
+import { Transaction, Category, Budget, FilterOptions, Goal, Preferences } from '../types';
 import { defaultCategories, mockTransactions, defaultGoals } from '../utils/mockData';
+
+const defaultPreferences: Preferences = {
+  currency: 'PLN',
+  emailNotifications: false,
+};
 
 export function useFinance() {
   const [transactions, setTransactions, isHydrated] = useLocalStorage<Transaction[]>(
@@ -24,6 +29,15 @@ export function useFinance() {
     defaultGoals || []
   );
 
+  const [preferences, setPreferences] = useLocalStorage<Preferences>(
+    'dashboard_preferences',
+    defaultPreferences
+  );
+
+  const sortedTransactions = useMemo(() => {
+    return [...transactions].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  }, [transactions]);
+
   // computations
 
   const currentMonthTransactions = useMemo(() => {
@@ -31,11 +45,11 @@ export function useFinance() {
     const currentMonth = now.getMonth();
     const currentYear = now.getFullYear();
 
-    return transactions.filter(t => {
+    return sortedTransactions.filter(t => {
       const d = new Date(t.date);
       return d.getMonth() === currentMonth && d.getFullYear() === currentYear;
     });
-  }, [transactions]);
+  }, [sortedTransactions]);
 
   const totalIncome = useMemo(() => {
     return currentMonthTransactions
@@ -98,10 +112,14 @@ export function useFinance() {
     setGoals(prev => prev.filter(item => item.id !== id));
   };
 
+  const updatePreferences = (newPrefs: Partial<Preferences>) => {
+    setPreferences(prev => ({ ...prev, ...newPrefs }));
+  };
+
   // filtering
 
   const getFilteredTransactions = (options: FilterOptions) => {
-    return transactions.filter(t => {
+    return sortedTransactions.filter(t => {
       let matches = true;
       if (options.type && t.type !== options.type) matches = false;
       if (options.categoryId && t.categoryId !== options.categoryId) matches = false;
@@ -112,10 +130,11 @@ export function useFinance() {
   };
 
   return {
-    transactions,
+    transactions: sortedTransactions,
     categories,
     budget,
     goals,
+    preferences,
     isHydrated,
 
     // calculated values for current month
@@ -132,6 +151,7 @@ export function useFinance() {
     getFilteredTransactions,
     addGoal,
     editGoal,
-    deleteGoal
+    deleteGoal,
+    updatePreferences
   };
 }
