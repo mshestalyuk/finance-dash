@@ -6,21 +6,16 @@ import { formatCurrency } from "../utils/formatCurrency";
 import { Card, CardContent } from "./ui/Card";
 import { Button } from "./ui/Button";
 import { GoalFormModal } from "./GoalFormModal";
+import { PageDescription } from "./PageDescription";
 import { Plus, Edit2, Trash2, Target, Calendar, TrendingUp } from "lucide-react";
 import { Goal } from "../types";
 
 export function Goals() {
-  const { goals, addGoal, editGoal, deleteGoal, isHydrated } = useFinance();
+  const { goals, addGoal, editGoal, deleteGoal, isHydrated, preferences } = useFinance();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingGoal, setEditingGoal] = useState<Goal | undefined>();
 
-  if (!isHydrated) {
-    return (
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {[1, 2, 3].map(i => <Card key={i} className="animate-pulse h-48"><CardContent /></Card>)}
-      </div>
-    );
-  }
+
 
   const handleOpenAdd = () => {
     setEditingGoal(undefined);
@@ -49,13 +44,17 @@ export function Goals() {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-end">
-        <Button onClick={handleOpenAdd} className="flex items-center gap-2">
+      <PageDescription>
+        <Button onClick={handleOpenAdd} className="flex items-center gap-2 w-full sm:w-auto">
           <Plus className="w-4 h-4" /> Add New Goal
         </Button>
-      </div>
+      </PageDescription>
 
-      {sortedGoals.length === 0 ? (
+      {!isHydrated ? (
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {[1, 2, 3].map(i => <Card key={i} className="animate-pulse h-48"><CardContent /></Card>)}
+        </div>
+      ) : sortedGoals.length === 0 ? (
         <div className="text-center py-12 text-zinc-500">
           <Target className="w-12 h-12 mx-auto mb-4 opacity-20" />
           <p>No financial goals set yet. Start planning out your future!</p>
@@ -103,10 +102,10 @@ export function Goals() {
                   <div className="space-y-3">
                     <div className="flex justify-between items-end">
                       <div className="text-2xl font-bold tracking-tight">
-                        {formatCurrency(goal.savedAmount)}
+                        {formatCurrency(goal.savedAmount, preferences.currency)}
                       </div>
                       <div className="text-sm font-medium text-zinc-500">
-                        / {formatCurrency(goal.targetAmount)}
+                        / {formatCurrency(goal.targetAmount, preferences.currency)}
                       </div>
                     </div>
 
@@ -120,7 +119,7 @@ export function Goals() {
                     <div className="flex justify-between items-center text-xs font-semibold uppercase tracking-wider text-zinc-500">
                       <span>{percentage.toFixed(0)}% Completed</span>
                       {remainingAmt > 0 ? (
-                        <span className="flex items-center text-zinc-400"><TrendingUp className="w-3 h-3 mr-1" /> {formatCurrency(remainingAmt)} Left</span>
+                        <span className="flex items-center text-zinc-400"><TrendingUp className="w-3 h-3 mr-1" /> {formatCurrency(remainingAmt, preferences.currency)} Left</span>
                       ) : (
                         <span className="text-green-500">Goal Reached!</span>
                       )}

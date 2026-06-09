@@ -10,12 +10,6 @@ export function Navbar({ onMenuToggle }: { onMenuToggle?: () => void }) {
   const [timeStr, setTimeStr] = useState<string>('');
 
   useEffect(() => {
-    // initial preference check
-    if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-      setIsDark(true);
-      document.documentElement.classList.add('dark');
-    }
-
     const updateDateTime = () => {
       const now = new Date();
       const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -42,6 +36,8 @@ export function Navbar({ onMenuToggle }: { onMenuToggle?: () => void }) {
   const getPageTitle = () => {
     switch (pathname) {
       case '/transactions': return 'Transactions';
+      case '/goals': return 'Goals';
+      case '/profile': return 'Profile';
       case '/settings': return 'Settings';
       default: return 'Dashboard';
     }
