@@ -1,17 +1,18 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 import { AppLayout } from "../components/AppLayout";
-import { MockAuthGuard } from "../components/MockAuthGuard";
+import { AuthGate } from "../components/AuthGate";
+import { AuthProvider } from "../components/AuthProvider";
 
-const geistSans = Geist({
+const geistSans = localFont({
+  src: "./fonts/geist-latin.woff2",
   variable: "--font-geist-sans",
-  subsets: ["latin"],
 });
 
-const geistMono = Geist_Mono({
+const geistMono = localFont({
+  src: "./fonts/geist-mono-latin.woff2",
   variable: "--font-geist-mono",
-  subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
@@ -27,11 +28,13 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
       <body className="font-sans bg-zinc-100 dark:bg-zinc-950 text-zinc-950 dark:text-zinc-50 antialiased min-h-screen">
-        <MockAuthGuard>
-          <AppLayout>
-            {children}
-          </AppLayout>
-        </MockAuthGuard>
+        <AuthProvider>
+          <AuthGate>
+            <AppLayout>
+              {children}
+            </AppLayout>
+          </AuthGate>
+        </AuthProvider>
       </body>
     </html>
   );
