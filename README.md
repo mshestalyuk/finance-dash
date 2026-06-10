@@ -145,3 +145,49 @@ src/
 - `useFinance` jest źródłem prawdy dla widoków finansowych i udostępnia zarówno dane, jak i akcje modyfikujące.
 - Formatowanie walut odbywa się przez [src/utils/formatCurrency.ts](src/utils/formatCurrency.ts) z lokalizacją `pl-PL`.
 - Klasy CSS są składane funkcją `cn` z [src/utils/utils.ts](src/utils/utils.ts), która łączy `clsx` i `tailwind-merge`.
+
+## Screenshoty z aplikacji, google analytics i hotjar
+
+Strona logowania
+![Login page](https://i.imgur.com/b1uu47n.png)
+
+---
+
+Strona rejestracji
+![Register page](https://i.imgur.com/jLz2o3x.png)
+
+---
+
+Strona główna
+![Dashboard](https://i.imgur.com/QKK9Bf3.png)
+
+---
+
+Transakcje
+![Transaction](https://i.imgur.com/60ZCRJI.png)
+
+---
+
+Cele
+![Goals](https://i.imgur.com/QzNOApO.png)
+
+---
+
+Profil
+![Profile](https://i.imgur.com/I4L5Bdd.png)
+
+---
+
+Ustawienia
+![Settings](https://i.imgur.com/SalAm3d.png)
+
+---
+
+Google Analytics
+![Analytics 1](https://i.imgur.com/957Idex.png)
+![Analytics 2](https://imgur.com/SXPRaQ5.png)
+
+---
+
+Hotjar
+![Hotjar](https://i.imgur.com/Jgfgojs.png)
